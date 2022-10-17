@@ -1,5 +1,5 @@
 ---
 title: Posts
-subtitle: all posts
+subtitle: all posts.
 layout: 'archives'
 ---

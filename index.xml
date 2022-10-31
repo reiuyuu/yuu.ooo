@@ -1,5 +1,296 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>yuu</title><link>https://yuu.ooo/</link><description>Recent content on yuu</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 17 Oct 2022 23:34:45 +0800</lastBuildDate><atom:link href="https://yuu.ooo/index.xml" rel="self" type="application/rss+xml"/><item><title>四疊半時光機藍調</title><link>https://yuu.ooo/posts/tatami-time-machine-blues/</link><pubDate>Mon, 17 Oct 2022 23:34:45 +0800</pubDate><guid>https://yuu.ooo/posts/tatami-time-machine-blues/</guid><description>
-&lt;h2 id="heading">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>reiuyuu</title><link>https://yuu.ooo/</link><description>Recent content on reiuyuu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 30 Oct 2022 22:03:14 +0800</lastBuildDate><atom:link href="https://yuu.ooo/index.xml" rel="self" type="application/rss+xml"/><item><title>CS 61B Project 2: BYoG — Build Your Own Roguelike Game</title><link>https://yuu.ooo/posts/byog/</link><pubDate>Sun, 30 Oct 2022 22:03:14 +0800</pubDate><guid>https://yuu.ooo/posts/byog/</guid><description>
+&lt;h2 id="introduction">
+&lt;a href="#introduction" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Introduction
+&lt;/h2>
+&lt;p>&lt;a href="https://sp18.datastructur.es/materials/proj/proj2/proj2">Project 2: CS61BYoG&lt;/a> is the third project (there is Project 0) in &lt;a href="https://sp18.datastructur.es/index.html">CS 61B Data Structures, Spring 2018&lt;/a>. Its specific theme is &lt;strong>Large Scale Design and Testing&lt;/strong>.&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> As described in the material, the task is to create an engine for generating explorable worlds — that is, to design and implement a 2D tile-based game.&lt;/p>
+&lt;blockquote>
+&lt;p>By &amp;ldquo;tile-based&amp;rdquo;, we mean the world for your game will consist of a 2D grid of tiles. By &amp;ldquo;game&amp;rdquo; we mean that the player will be able to walk around and interact with the world.&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+&lt;/blockquote>
+&lt;p>Let&amp;rsquo;s say, a minimal roguelike game would meet the requirement, so I add an &amp;lsquo;R&amp;rsquo; to &lt;strong>BYoG&lt;/strong>; that is, &lt;strong>Build Your Own Roguelike Game&lt;/strong>. Here I would like to talk about my solution briefly.&lt;/p>
+&lt;h2 id="world-generation">
+&lt;a href="#world-generation" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+World Generation
+&lt;/h2>
+&lt;p>The first goal of the project will be to write a world generator. The world will be pseudorandomly generated, including rooms and hallways, drawn using the tile engine provided. My final version will be as the image shown below. Not much surprise, but that&amp;rsquo;s what will cost 80% of the time in this project. You may say project 2 is about &lt;strong>World Generation Algorithm&lt;/strong>.&lt;/p>
+&lt;p>&lt;img loading="lazy"
+src="https://yuu.ooo/posts/byog/images/random_map_example.png"
+alt="world generation example"
+width=1200
+height="496" />
+&lt;em>random map example&lt;/em>&lt;/p>
+&lt;h3 id="overview">
+&lt;a href="#overview" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Overview
+&lt;/h3>
+&lt;p>So I started googling for cool world generation algorithms and found &lt;a href="https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/">Rooms and Mazes: A Procedural Dungeon Generator&lt;/a>, an article about generating dungeons in roguelike games, by Bob Nystrom. In summary:&lt;/p>
+&lt;blockquote>
+&lt;ol>
+&lt;li>Place a bunch of random non-overlapping rooms.&lt;/li>
+&lt;li>Fill in the remaining solid regions with mazes.&lt;/li>
+&lt;li>Connect each of the mazes and rooms to their neighbors, with a chance to add some extra connections.&lt;/li>
+&lt;li>Remove all of the dead ends.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/li>
+&lt;/ol>
+&lt;/blockquote>
+&lt;p>I have to say it quite matches the &lt;a href="https://sp18.datastructur.es/materials/proj/proj2/proj2#:~:text=The%20requirements%20for%20your%20world%20are%20listed%20below%3A">requirements&lt;/a>, and its &lt;a href="https://github.com/munificent/hauberk/blob/db360d9efa714efb6d937c31953ef849c7394a39/lib/src/content/dungeon.dart">implementation&lt;/a> is pretty fancy and neat. So I rewrote it in Java with minor modifications. My contribution seems minimal, but I thought it would be worth writing down and going into a few details, including three critical steps: &lt;code>addRooms&lt;/code>, &lt;code>growMaze&lt;/code>, then &lt;code>connectRegions&lt;/code>.&lt;/p>
+&lt;h3 id="addrooms">
+&lt;a href="#addrooms" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+addRooms
+&lt;/h3>
+&lt;p>Starting with a 2D grid of WALL tile filled map, it first calls &lt;code>addRooms&lt;/code>: Do a &lt;code>numRoomTries&lt;/code> of attempts to place rooms. In each loop, it first creates a room with random width, height and position. Then checks if this room overlaps an existing one. If so, skip it; otherwise, dig it out, i.e. fill in the FLOOR tile.&lt;/p>
+&lt;h3 id="growmaze">
+&lt;a href="#growmaze" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+growMaze
+&lt;/h3>
+&lt;p>It then iterates every tile in the map and performs &lt;code>growMaze&lt;/code> — a flood fill algorithm, where it could be. This resulted in the rest of the map being filled with mazes. Here, it is worth mentioning that as the maze incrementally grows from one tile to the next, it requires polling the current tile&amp;rsquo;s four directions, up, right, down, and left, every time. The trick to this is the preset &lt;code>CARDINALS&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">static&lt;/span> &lt;span class="kd">final&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">[]&lt;/span> &lt;span class="n">CARDINALS&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">[]&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="o">,&lt;/span> &lt;span class="n">0&lt;/span>&lt;span class="o">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="o">,&lt;/span> &lt;span class="n">1&lt;/span>&lt;span class="o">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">(-&lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="o">,&lt;/span> &lt;span class="n">0&lt;/span>&lt;span class="o">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="o">,&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="n">Position&lt;/span> &lt;span class="nf">turn&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">Position&lt;/span> &lt;span class="n">dir&lt;/span>&lt;span class="o">)&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="k">new&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">x&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">dir&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">x&lt;/span>&lt;span class="o">,&lt;/span> &lt;span class="k">this&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">y&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">dir&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">y&lt;/span>&lt;span class="o">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> &lt;span class="o">(&lt;/span>&lt;span class="n">Position&lt;/span> &lt;span class="n">dir&lt;/span> &lt;span class="o">:&lt;/span> &lt;span class="n">Position&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">CARDINALS&lt;/span>&lt;span class="o">)&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">newPos&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">oldPos&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">turn&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">dir&lt;/span>&lt;span class="o">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="connectregions">
+&lt;a href="#connectregions" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+connectRegions
+&lt;/h3>
+&lt;p>After filling in the rooms and mazes, find connections between them. We treat each region of tiles as a single vertex and each connector as an edge between them,&lt;sup id="fnref1:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup> and then it is all about finding a spanning tree:&lt;/p>
+&lt;p>&lt;code>connectRegions&lt;/code> first creates a list of tiles (&lt;code>connectors&lt;/code>) that can connect two or more regions and a map (&lt;code>merged&lt;/code>) that keeps track of all merged regions, as well as a set of unconnected regions (&lt;code>openRegions&lt;/code>). Then, it keeps connecting regions and updating the &lt;code>openRegions&lt;/code> until it is down to one.&lt;/p>
+&lt;p>The process is pretty straightforward:&lt;/p>
+&lt;blockquote>
+&lt;ol>
+&lt;li>Pick a random room to be the main region.&lt;/li>
+&lt;li>Pick a random connector that touches the main region and open it up.&lt;/li>
+&lt;li>The connected region is now part of the main one. Unify it.&lt;/li>
+&lt;li>Remove any extraneous connectors.&lt;/li>
+&lt;li>If there are still connectors left, go to #2.&lt;sup id="fnref2:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/li>
+&lt;/ol>
+&lt;/blockquote>
+&lt;p>All that remains is to make a few more tweaks. Remove all of the dead ends and inner walls, place an exit and one player, then we&amp;rsquo;re good to go. And I think I will stop here.&lt;/p>
+&lt;h2 id="interactivity">
+&lt;a href="#interactivity" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Interactivity
+&lt;/h2>
+&lt;blockquote>
+&lt;p>In the second phase of the game, you&amp;rsquo;ll add the ability for the user to actually play the game, and will also add user interface (UI) elements to your game to make it feel more immersive and informative.&lt;sup id="fnref1:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="game-ui-appearance">
+&lt;a href="#game-ui-appearance" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Game UI Appearance
+&lt;/h3>
+&lt;p>The game uses the provided TileEngine, which makes heavy use of StdDraw, for displaying graphics. When the game runs with &lt;code>Core.Game.playWithKeyboard()&lt;/code> method, it displays the menu with three options as shown below.&lt;/p>
+&lt;p>&lt;img loading="lazy"
+src="https://yuu.ooo/posts/byog/images/menu.png"
+alt="menu"
+width=1200
+height="560" />
+&lt;em>game menu&lt;/em>&lt;/p>
+&lt;p>We may press N for &amp;ldquo;New Game&amp;rdquo; or L for &amp;ldquo;Load Game&amp;rdquo;, and the game start. The user interface consists of a 2D grid of tiles showing the current state of the world and a HUD that displays the description of the tile under the mouse pointer. And that&amp;rsquo;s it, without any unnecessary clutter or confusion.&lt;/p>
+&lt;p>&lt;img loading="lazy"
+src="https://yuu.ooo/posts/byog/images/game_ui.png"
+alt="menu"
+width=1200
+height="560" />
+&lt;em>game UI&lt;/em>&lt;/p>
+&lt;h3 id="game-ui-behavior">
+&lt;a href="#game-ui-behavior" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Game UI Behavior
+&lt;/h3>
+&lt;p>The game begins, and we can be in control of the &amp;lsquo;@&amp;rsquo; character to move up, left, down and right using the W, A, S, and D keys, respectively. That&amp;rsquo;s how we interact with the world. Here we use &lt;code>StdDraw&lt;/code> to handle user input:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">private&lt;/span> &lt;span class="kt">char&lt;/span> &lt;span class="nf">solicitInput&lt;/span>&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">while&lt;/span> &lt;span class="o">(&lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="o">)&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">(&lt;/span>&lt;span class="n">StdDraw&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">hasNextKeyTyped&lt;/span>&lt;span class="o">())&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">Character&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">toUpperCase&lt;/span>&lt;span class="o">(&lt;/span>&lt;span class="n">StdDraw&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="na">nextKeyTyped&lt;/span>&lt;span class="o">());&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>The game mechanics is that users win by moving the &amp;lsquo;@&amp;rsquo; character to a golden colored WALL tile representing the exit, without touching the wall along the way. There are no additional bells or whistles; I believe that&amp;rsquo;s all it needs to function correctly.&lt;/p>
+&lt;h3 id="saving-and-loading">
+&lt;a href="#saving-and-loading" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Saving and Loading
+&lt;/h3>
+&lt;blockquote>
+&lt;p>Your game must have the ability to save the game while playing and load the game in the exact state of the most recent save after quitting and opening the game back up.&lt;sup id="fnref2:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+&lt;/blockquote>
+&lt;p>The technique to accomplish this is the Java interface &lt;code>Serializable&lt;/code>. What it does is basically translate a data structure or object state into a format that can be stored or transmitted. Implementing the interface marks the class as &amp;ldquo;okay to serialize&amp;rdquo;, and Java then handles serialization internally.&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">class&lt;/span> &lt;span class="nc">MapGenerator&lt;/span> &lt;span class="kd">extends&lt;/span> &lt;span class="n">StageBuilder&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="o">...&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">class&lt;/span> &lt;span class="nc">Position&lt;/span> &lt;span class="kd">extends&lt;/span> &lt;span class="n">StageBuilder&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="o">...&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">class&lt;/span> &lt;span class="nc">Room&lt;/span> &lt;span class="kd">extends&lt;/span> &lt;span class="n">StageBuilder&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="o">...&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">public&lt;/span> &lt;span class="kd">class&lt;/span> &lt;span class="nc">Player&lt;/span> &lt;span class="kd">extends&lt;/span> &lt;span class="n">StageBuilder&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="o">...&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">abstract&lt;/span> &lt;span class="kd">class&lt;/span> &lt;span class="nc">StageBuilder&lt;/span> &lt;span class="kd">implements&lt;/span> &lt;span class="n">Serializable&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">private&lt;/span> &lt;span class="kd">static&lt;/span> &lt;span class="kd">final&lt;/span> &lt;span class="kt">long&lt;/span> &lt;span class="n">serialVersionUID&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">1234567890L&lt;/span>&lt;span class="o">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="pseudorandom">
+&lt;a href="#pseudorandom" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+Pseudorandom
+&lt;/h3>
+&lt;p>Another critical topic of this project is pseudorandom. By pseudorandom, it means that the world generated, given a different seed, did vary greatly; but for a certain seed, it is deterministic.&lt;/p>
+&lt;p>The &lt;code>Random&lt;/code> object would work; it is guaranteed to output the same sequence of numbers, which is completely determined by an initial seed. And the same sequence of numbers determines the width, height and location of the rooms, how twists and turns the maze is, and every single connector. Thus, the world should yield exactly the same.&lt;/p>
+&lt;h2 id="end">
+&lt;a href="#end" class="anchor">
+&lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
+&lt;path fill-rule="evenodd"
+d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z">
+&lt;/path>
+&lt;/svg>
+&lt;/a>
+End
+&lt;/h2>
+&lt;p>That&amp;rsquo;s my naive solution; you may grab the code &lt;a href="https://github.com/reiuyuu/cs61b-sp18/tree/main/proj2/byog">here&lt;/a>. I am pretty aware that the game I built doesn&amp;rsquo;t look nice or fun. Nonetheless, project 2 is not about games; what really matters is, as mentioned in the material:&lt;/p>
+&lt;blockquote>
+&lt;p>The goal of this project is to teach you how to handle a larger piece of code with little starter code in the hopes of emulating something like a product development cycle.&lt;sup id="fnref3:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>&lt;/p>
+&lt;/blockquote>
+&lt;div class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1">
+&lt;p>&lt;a href="https://sp18.datastructur.es/about.html">About | CS 61B Spring 2018&lt;/a>&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:2">
+&lt;p>&lt;a href="https://sp18.datastructur.es/materials/proj/proj2/proj2">Project 2: CS61BYoG | CS 61B Spring 2018&lt;/a>&amp;#160;&lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&amp;#160;&lt;a href="#fnref1:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&amp;#160;&lt;a href="#fnref2:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&amp;#160;&lt;a href="#fnref3:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:3">
+&lt;p>&lt;a href="https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/">Rooms and Mazes: A Procedural Dungeon Generator - journal.stuffwithstuff.com&lt;/a>&amp;#160;&lt;a href="#fnref:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&amp;#160;&lt;a href="#fnref1:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&amp;#160;&lt;a href="#fnref2:3" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:4">
+&lt;p>&lt;a href="https://en.wikipedia.org/wiki/Serialization">Serialization - Wikipedia&lt;/a>&amp;#160;&lt;a href="#fnref:4" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div></description></item><item><title>四疊半時光機藍調</title><link>https://yuu.ooo/posts/tatami-time-machine-blues/</link><pubDate>Mon, 17 Oct 2022 23:34:45 +0800</pubDate><guid>https://yuu.ooo/posts/tatami-time-machine-blues/</guid><description>
+&lt;h3 id="heading">
 &lt;a href="#heading" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -8,7 +299,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅰ
-&lt;/h2>
+&lt;/h3>
 &lt;p>我可以斷言&lt;br>
 我從未度過任何有意義的夏天&lt;br>
 如果沒有遇到他&lt;br>
@@ -18,7 +309,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 我沒有向她搭話&lt;br>
 男女關係應配合彼此的步調謹慎經營&lt;br>
 而非莽撞地跟隨一年的觀光節日或活動時程來推進&lt;/p>
-&lt;h2 id="heading-1">
+&lt;h3 id="heading-1">
 &lt;a href="#heading-1" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -27,7 +318,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅱ
-&lt;/h2>
+&lt;/h3>
 &lt;p>我們去看看未來怎麼樣？&lt;br>
 這可是時光機的精髓呢！&lt;br>
 我也提個意見可以嗎？&lt;br>
@@ -39,7 +330,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 聽好了，時光機是製造得出來的&lt;br>
 這可是世上的真理！&lt;br>
 是啊，這就是所謂時代的洪流&lt;/p>
-&lt;h2 id="heading-2">
+&lt;h3 id="heading-2">
 &lt;a href="#heading-2" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -48,7 +339,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅲ
-&lt;/h2>
+&lt;/h3>
 &lt;p>這樣沒關係嗎？&lt;br>
 這個遙控器要放回昨天&lt;br>
 我追著小津，他追著昨天的我&lt;br>
@@ -56,7 +347,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 你總是這樣，錯失眼前的好機會&lt;br>
 現在還來得及重來&lt;br>
 不然要時光機幹嘛？&lt;/p>
-&lt;h2 id="heading-3">
+&lt;h3 id="heading-3">
 &lt;a href="#heading-3" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -65,7 +356,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅳ
-&lt;/h2>
+&lt;/h3>
 &lt;p>在迎新會的時候去鐘樓下看看吧&lt;br>
 各社團都在等著新生&lt;br>
 那是通往無限光明未來的大門喔&lt;br>
@@ -77,7 +368,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 到底有什麼可能性可言？&lt;br>
 學長，請邀我去看五山送火&lt;br>
 請你一定要做到&lt;/p>
-&lt;h2 id="heading-4">
+&lt;h3 id="heading-4">
 &lt;a href="#heading-4" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -86,14 +377,14 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅴ
-&lt;/h2>
+&lt;/h3>
 &lt;p>大家在 209 號房為冷氣舉行守靈夜&lt;br>
 盛夏的炒飯正是青春的晚膳！&lt;br>
 這種事怎麼可能當面說&lt;br>
 我還是有時空旅行者的自覺的&lt;br>
 所以說這一切都是早就註定好的嗎？&lt;br>
 我們的夏天就這樣邁向結束&lt;/p>
-&lt;h2 id="heading-5">
+&lt;h3 id="heading-5">
 &lt;a href="#heading-5" class="anchor">
 &lt;svg class="icon" aria-hidden="true" focusable="false" height="16" version="1.1" viewBox="0 0 16 16" width="16">
 &lt;path fill-rule="evenodd"
@@ -102,7 +393,7 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 &lt;/svg>
 &lt;/a>
 Ⅵ
-&lt;/h2>
+&lt;/h3>
 &lt;p>我還是閃耀著光芒的大一新生時&lt;br>
 在我眼前有無數扇通往薔薇色大學生活的大門&lt;br>
 和黑髮少女們一起搭乘戀愛慢速列車&lt;br>
@@ -118,4 +409,5 @@ d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.
 src="https://yuu.ooo/posts/tatami-time-machine-blues/images/tatami-time-machince-blue-S01E06-12min05s.png"
 alt="Tatami Time Machince Blue - S01E06 12min05s"
 width=1920
-height="1080" />&lt;/p></description></item></channel></rss>
+height="1080" />
+&lt;em>「四疊半時光機藍調」 E06, 9min, 37s&lt;/em>&lt;/p></description></item></channel></rss>

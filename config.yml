@@ -1,0 +1,64 @@
+baseurl: 'https://yuu.ooo/'
+languageCode: 'zh-CN'
+title: 'reiuyuu'
+description: 'reiuyuu'
+theme: 'hugo-tania'
+paginate: 6
+
+params:
+  # Enable float footnotes.
+  # Default to true
+  enableFootnotes: false
+
+  siteName: 'reiuyuu'
+  siteDesc: 'reiuyuu'
+  author: 'yuu'
+
+  colorScheme:
+    # Enable toggle colorScheme
+    toggle: true
+    # Default colorScheme
+    default: auto
+
+  # Show your socail information with icon on index bio with `_index.md` content.
+  # socialOptions:
+  #   dev-to:
+  #   email: 'reiuyuu@gmail.com'
+  #   facebook:
+  #   github: 'https://github.com/reiuyuu'
+  #   instagram:
+  #   linkedin:
+  #   medium:
+  #   stack-overflow:
+  #   steam:
+  #   telegram:
+  #   twitter: 'https://twitter.com/reiuyuu'
+  #   twitch:
+  #   whatsapp:
+
+  # Comments settings
+  comments:
+    enabled: false
+
+# menu:
+#   header:
+#     - name: Post
+#       url: '/posts/'
+#     - name: About
+#       url: '/about/'
+#   footer:
+#     - name: RSS
+#       url: '/index.xml'
+
+markup:
+  highlight:
+    noClasses: false
+    lineNos: true
+  goldmark:
+    renderer:
+      unsafe: true
+
+outputs:
+  home: ['HTML', 'RSS', 'JSON']
+
+googleAnalytics: G-YQ48S2G5L8
